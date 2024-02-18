@@ -1,0 +1,72 @@
+[gd_scene load_steps=10 format=3 uid="uid://c0mufsqwl632p"]
+
+[ext_resource type="Texture2D" uid="uid://y7sih0oufvj3" path="res://assets/kloofendal_48d_partly_cloudy_puresky_2k.hdr" id="1_siygv"]
+[ext_resource type="Texture2D" uid="uid://cd5cxcc7lhoxm" path="res://assets/dark_texture.png" id="2_dhh12"]
+[ext_resource type="Script" path="res://scripts/Player.gd" id="3_jaesv"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_qalmk"]
+panorama = ExtResource("1_siygv")
+
+[sub_resource type="Sky" id="Sky_cby7s"]
+sky_material = SubResource("PanoramaSkyMaterial_qalmk")
+
+[sub_resource type="Environment" id="Environment_jp2x3"]
+background_mode = 2
+sky = SubResource("Sky_cby7s")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xa0oe"]
+albedo_texture = ExtResource("2_dhh12")
+uv1_triplanar = true
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_a71xt"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_rwi2d"]
+height = 1.5
+
+[node name="World" type="Node3D"]
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_jp2x3")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Stage" type="Node3D" parent="."]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+use_collision = true
+size = Vector3(25, 1, 25)
+material = SubResource("StandardMaterial3D_xa0oe")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 2.2, 0)
+use_collision = true
+size = Vector3(25, 1, 25)
+material = SubResource("StandardMaterial3D_xa0oe")
+
+[node name="Player" type="CharacterBody3D" parent="Stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("3_jaesv")
+
+[node name="standing_collision_shape" type="CollisionShape3D" parent="Stage/Player"]
+shape = SubResource("CapsuleShape3D_a71xt")
+
+[node name="crouching_collision_shape" type="CollisionShape3D" parent="Stage/Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+shape = SubResource("CapsuleShape3D_rwi2d")
+disabled = true
+
+[node name="Head" type="Node3D" parent="Stage/Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Stage/Player/Head"]
+
+[node name="RayCast3D" type="RayCast3D" parent="Stage/Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+target_position = Vector3(0, 2, 0)
